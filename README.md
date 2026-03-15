@@ -67,9 +67,13 @@ GET /convert?datetime_str=2026-03-15T20:00:00&from_tz=Europe/Moscow&to_tz=Americ
 
 ## Деплой
 
-При пуше в ветку `main` GitHub Actions автоматически:
-1. Собирает Docker образ и пушит в GitHub Container Registry
-2. Подключается к серверу по SSH и разворачивает новую версию
+При пуше в `main` или открытии Pull Request GitHub Actions запускает три job'а:
+
+1. `check` — устанавливает зависимости и проверяет импорты (запускается на push и PR)
+2. `build-and-push` — собирает Docker образ и пушит в GitHub Container Registry (только push в main)
+3. `deploy` — подключается к серверу по SSH, пуллит новый образ, проверяет контрольную сумму и перезапускает контейнер если образ изменился (только push в main)
+
+PR в `main` не может быть смержен если job `check` упал.
 
 Продакшн: http://89.111.154.157:8000  
 Swagger UI: http://89.111.154.157:8000/docs
